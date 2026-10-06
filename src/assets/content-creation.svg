@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#17231e"/><stop offset="1" stop-color="#090d0c"/></linearGradient><radialGradient id="gl"><stop stop-color="#d6a63a" stop-opacity=".35"/><stop offset="1" stop-color="#d6a63a" stop-opacity="0"/></radialGradient></defs>
+<rect width="1200" height="700" fill="url(#g)"/><circle cx="920" cy="150" r="260" fill="url(#gl)"/>
+<rect x="120" y="120" width="700" height="430" rx="18" fill="#0c1110" stroke="#8d6b27" stroke-width="3"/>
+<rect x="155" y="155" width="630" height="350" rx="8" fill="#101a17"/>
+<circle cx="470" cy="330" r="105" fill="none" stroke="#c99a32" stroke-width="8"/><circle cx="470" cy="330" r="65" fill="none" stroke="#c99a32" stroke-width="3"/>
+<path d="M420 350l42-48 34 29 62-75" fill="none" stroke="#f0d58d" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="340" y="585" width="260" height="20" rx="10" fill="#8d6b27"/><text x="120" y="640" fill="#d6a63a" font-family="Arial" font-size="24" letter-spacing="6">CONTENT CREATION</text>
+</svg>
