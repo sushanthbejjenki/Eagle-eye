@@ -1,151 +1,103 @@
-import { FormEvent, PointerEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { FormEvent, KeyboardEvent, ReactNode, useEffect, useState } from "react"
 import "./index.css"
 import heroVideo from "./assets/eagle-approach.mp4"
 import heroPoster from "./assets/eagle-approach.png"
+import heroFallback from "./assets/eagle-extreme-closeup.png"
 import monitoringRoom from "./assets/monitoring-room.jpg"
-import contentCreation from "./assets/content-creation.svg"
-import contentModeration from "./assets/content-moderation.svg"
-import itTechnology from "./assets/it-technology.svg"
-import eagleLogo from "./assets/eagle-eye-logo.png"
-import eagleBootLogo from "./assets/eagle-eye-logo-dark.png"
-import eagleEmblem from "./assets/eagle-eye-emblem.png"
+import eagleEyeLogo from "./assets/eagle-eye-logo.png"
 
-const installImage = "https://storage.googleapis.com/content-assistant-images-persistent/technician-installing-an-ip-security-camera-in-a-commercial-setting-5fe96019-5eed-4cab-861f-a5017d191576.webp"
-const buildingImage = "https://www.cctvsecuritypros.com/product_images/uploaded_images/profeassional-security-camera-systems.png"
-const controlImage = "https://mbjgrupa.com.pl/images/monitoring-systemy-ochrony-mbj.webp"
+const ENQUIRY_EMAIL = "hr@andsolutions.com"
+const ADDRESS = "Fuel Trips 1, 481 US HWY 1S, Rockingham, NC 28379"
 
-type IconName = "arrow"|"eye"|"camera"|"shield"|"remote"|"menu"|"search"|"user"|"close"|"chevron"|"lock"|"send"
-function Icon({name}:{name:IconName}){
- const p={width:20,height:20,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.5,strokeLinecap:"round" as const,strokeLinejoin:"round" as const}
- if(name==="arrow")return <svg {...p}><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></svg>
- if(name==="eye")return <svg {...p}><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>
- if(name==="camera")return <svg {...p}><path d="M4 8h4l1.6-2h4.8L16 8h4v10H4Z"/><circle cx="12" cy="13" r="3"/></svg>
- if(name==="shield")return <svg {...p}><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg>
- if(name==="remote")return <svg {...p}><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 15h8M8 9h.01M12 9h.01M16 9h.01"/></svg>
- if(name==="search")return <svg {...p}><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
- if(name==="user")return <svg {...p}><circle cx="12" cy="8" r="3.2"/><path d="M5 20c.8-3.2 3.1-5 7-5s6.2 1.8 7 5"/></svg>
- if(name==="close")return <svg {...p}><path d="M5 5l14 14M19 5 5 19"/></svg>
- if(name==="chevron")return <svg {...p}><path d="m7 9 5 5 5-5"/></svg>
- if(name==="lock")return <svg {...p}><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
- return <svg {...p}><path d="m4 12 5 5L20 6"/></svg>
-}
-
-const services=[
- {n:"01",icon:"eye" as IconName,title:"CCTV Monitoring",tag:"CONTINUOUS VISIBILITY",desc:"Professional video monitoring for businesses that require dependable oversight across critical areas and operating hours.",image:controlImage},
- {n:"02",icon:"camera" as IconName,title:"CCTV Installation",tag:"SITE → SYSTEM",desc:"Site assessment, camera placement, installation, configuration and verification delivered as one coordinated deployment.",image:installImage},
- {n:"03",icon:"shield" as IconName,title:"Real Estate Promotions",tag:"PROPERTY MARKETING",desc:"Promotional support for real estate properties and developments, helping present listings and opportunities clearly across digital channels.",image:buildingImage},
- {n:"04",icon:"remote" as IconName,title:"Digital Marketing",tag:"DIGITAL GROWTH",desc:"Digital marketing support designed to strengthen brand visibility, audience reach and business presence across online platforms.",image:monitoringRoom},
- {n:"05",icon:"camera" as IconName,title:"Content Creation",tag:"CREATIVE PRODUCTION",desc:"Professional content creation for businesses, including visual and written assets developed for modern digital communication.",image:contentCreation},
- {n:"06",icon:"shield" as IconName,title:"Content Moderation",tag:"CONTENT QUALITY",desc:"Content review and moderation support to help businesses maintain appropriate, consistent and reliable digital environments.",image:contentModeration},
- {n:"07",icon:"remote" as IconName,title:"IT & Technology",tag:"TECHNOLOGY SUPPORT",desc:"IT and technology services that support business systems, digital infrastructure and day-to-day technical requirements.",image:itTechnology}
-]
-const process=[
- ["01","SCAN","Review the property, operating environment, access points and required coverage."],
- ["02","DESIGN","Translate site requirements into a practical camera and surveillance architecture."],
- ["03","DEPLOY","Install, configure and connect equipment with attention to coverage and reliability."],
- ["04","VERIFY","Test camera views, recording, connectivity and remote access before handover."]
-]
-const owners=[
- {role:"PROPERTY OWNER",title:"Know the site without being on the site.",text:"A security system should give ownership teams confidence in what is happening across every important area of a property.",metric:"01 / OWNERSHIP VISIBILITY",image:buildingImage},
- {role:"OPERATIONS LEADER",title:"Turn cameras into operational visibility.",text:"Bring entrances, customer areas, service zones and critical assets into one dependable surveillance view.",metric:"02 / OPERATIONAL CONTROL",image:controlImage},
- {role:"FACILITY MANAGER",title:"Build coverage around the way people move.",text:"Good surveillance starts with understanding the building, its access points and the activity patterns inside it.",metric:"03 / SITE INTELLIGENCE",image:installImage},
- {role:"MULTI-SITE OWNER",title:"Standardize security across locations.",text:"Create a repeatable surveillance approach that can scale from one property to a distributed portfolio.",metric:"04 / NETWORKED SITES",image:itTechnology}
+const services = [
+  { title: "CCTV Monitoring", tag: "SECURITY & SURVEILLANCE", text: "Professional video monitoring that helps businesses maintain dependable visibility across their properties and critical operating areas.", image: monitoringRoom },
+  { title: "CCTV Installation", tag: "SECURITY & INSTALLATION", text: "Site assessment, camera placement, installation, configuration and system testing tailored to the property.", image: "https://www.cctvsecuritypros.com/product_images/uploaded_images/profeassional-security-camera-systems.png" },
+  { title: "Real Estate Promotions", tag: "REAL ESTATE", text: "Digital and promotional support that helps real estate properties, projects and developments reach the right audiences.", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" },
+  { title: "Digital Marketing", tag: "DIGITAL", text: "Digital marketing support focused on online visibility, audience reach, brand presence and promotional activity.", image: "https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=1200&q=80" },
+  { title: "Content Creation", tag: "CONTENT", text: "Professional visual and written content developed for business communication, marketing and digital channels.", image: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&w=1200&q=80" },
+  { title: "Content Moderation", tag: "CONTENT OPERATIONS", text: "Content review and moderation support designed to help maintain consistent and appropriate digital environments.", image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=80" },
+  { title: "IT & Technology", tag: "TECHNOLOGY", text: "Technology support for business systems, digital infrastructure, software and day-to-day technical requirements.", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" },
 ]
 
-function MagneticButton({children,onClick,className=""}:{children:ReactNode,onClick?:()=>void,className?:string}){
- const ref=useRef<HTMLButtonElement>(null)
- const move=(e:PointerEvent<HTMLButtonElement>)=>{const el=ref.current;if(!el)return;const r=el.getBoundingClientRect();const x=(e.clientX-r.left-r.width/2)*.16;const y=(e.clientY-r.top-r.height/2)*.16;el.style.setProperty("--mx",`${x}px`);el.style.setProperty("--my",`${y}px`)}
- const leave=()=>{const el=ref.current;if(el){el.style.setProperty("--mx","0px");el.style.setProperty("--my","0px")}}
- return <button ref={ref} className={`magnetic ${className}`} onClick={onClick} onPointerMove={move} onPointerLeave={leave}>{children}</button>
-}
+const industries = ["Retail & Supermarkets", "Commercial Properties", "Warehouses & Distribution", "Property & Real Estate", "Growing Businesses", "Digital Operations"]
+
+function Arrow(){return <span className="arrow">→</span>}
+function Button({children,onClick,secondary=false}:{children:ReactNode,onClick?:()=>void,secondary?:boolean}){return <button className={`cta ${secondary?"secondary":""}`} onClick={onClick}>{children}<Arrow/></button>}
 
 export default function App(){
- const [menu,setMenu]=useState(false),[login,setLogin]=useState(false),[profile,setProfile]=useState(false),[search,setSearch]=useState(false),[sent,setSent]=useState(false)
- const [active,setActive]=useState(0),[rotation,setRotation]=useState(0),[scrolled,setScrolled]=useState(false),[owner,setOwner]=useState(0),[flipped,setFlipped]=useState<number|null>(null)
- const [query,setQuery]=useState("")
- const [boot,setBoot]=useState(true),[progress,setProgress]=useState(0)
- const drag=useRef({down:false,x:0,r:0,moved:false})
- useEffect(()=>{
-  const on=()=>{
-   setScrolled(scrollY>40)
-   const max=document.documentElement.scrollHeight-innerHeight
-   setProgress(max>0?Math.min(100,(scrollY/max)*100):0)
+  const [flippedServices,setFlippedServices]=useState<number[]>([])
+  const [policy,setPolicy]=useState<"privacy"|"terms"|null>(null)
+  const [menu,setMenu]=useState(false)
+  const [sent,setSent]=useState(false)
+
+  useEffect(()=>{document.body.style.overflow=policy!==null?"hidden":"";return()=>{document.body.style.overflow=""}},[policy])
+  const go=(id:string)=>{setMenu(false);document.getElementById(id)?.scrollIntoView({behavior:"smooth"})}
+  const submit=(e:FormEvent<HTMLFormElement>)=>{
+    e.preventDefault()
+    const data=new FormData(e.currentTarget)
+    const subject=`Eagle Eye Monitoring enquiry — ${data.get("service")}`
+    const body=[`Name: ${data.get("name")}`,`Company / Property: ${data.get("company")}`,`Email: ${data.get("email")}`,`Phone: ${data.get("phone")||"Not provided"}`,`Service: ${data.get("service")}`,`Message: ${data.get("message")}`].join("\n")
+    window.location.href=`mailto:${ENQUIRY_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    setSent(true)
+    e.currentTarget.reset()
   }
-  on();addEventListener("scroll",on,{passive:true});return()=>removeEventListener("scroll",on)
- },[])
- useEffect(()=>{
-  const timer=window.setTimeout(()=>setBoot(false),1250)
-  const nodes=[...document.querySelectorAll<HTMLElement>(".reveal")].filter(Boolean)
-  const io=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("is-visible");io.unobserve(entry.target)}}),{threshold:.12,rootMargin:"0px 0px -8% 0px"})
-  nodes.forEach(n=>io.observe(n))
-  return()=>{window.clearTimeout(timer);io.disconnect()}
- },[])
- useEffect(()=>{const key=(e:KeyboardEvent)=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();setSearch(true)}};addEventListener("keydown",key);return()=>removeEventListener("keydown",key)},[])
- const go=(id:string)=>{setMenu(false);document.getElementById(id)?.scrollIntoView({behavior:"smooth"})}
- const start=(e:PointerEvent<HTMLDivElement>)=>{
-  e.preventDefault()
-  drag.current={down:true,x:e.clientX,r:rotation,moved:false}
-  e.currentTarget.setPointerCapture(e.pointerId)
- }
- const move=(e:PointerEvent<HTMLDivElement>)=>{
-  if(!drag.current.down)return
-  const delta=e.clientX-drag.current.x
-  if(Math.abs(delta)>3)drag.current.moved=true
-  const next=drag.current.r+delta*.4
-  setRotation(next)
-  const step=360/services.length
-  const idx=Math.round((((next%360)+360)%360)/step)%services.length
-  setActive((services.length-idx)%services.length)
- }
- const end=(e:PointerEvent<HTMLDivElement>)=>{
-  drag.current.down=false
-  try{e.currentTarget.releasePointerCapture(e.pointerId)}catch{}
- }
- const selectService=(index:number)=>{
-  if(drag.current.moved){drag.current.moved=false;return}
-  setActive(index)
- }
- const submit=(e:FormEvent<HTMLFormElement>)=>{e.preventDefault();setSent(true);e.currentTarget.reset();setTimeout(()=>setSent(false),6000)}
- const results=useMemo(()=>{const q=query.toLowerCase().trim();if(!q)return [{label:"Solutions",id:"services"},{label:"CCTV installation",id:"installation"},{label:"Monitoring intelligence",id:"intelligence"},{label:"Company",id:"company"},{label:"Request a security review",id:"quote"}];return [...services.map(s=>({label:s.title,id:"services"})),{label:"CCTV installation",id:"installation"},{label:"Monitoring intelligence",id:"intelligence"},{label:"Request a security review",id:"quote"}].filter(x=>x.label.toLowerCase().includes(q))},[query])
- return <main className="site">
-  {boot&&<div className="boot-screen"><div className="boot-core"><img className="boot-logo" src={eagleBootLogo} alt="Eagle Eye Monitoring" /></div></div>}
-  <div className="scroll-progress"><span style={{width:`${progress}%`}}></span></div>
-  <header className={`nav ${scrolled?"nav-scrolled":""}`}>
-   <button className="brand" onClick={()=>go("home")} aria-label="Eagle Eye Monitoring home"><img className="brand-logo" src={eagleEmblem} alt="" /><span><b className="shimmer">EAGLE EYE</b><small>MONITORING</small></span></button>
-   <nav className={menu?"open":""}><button onClick={()=>go("services")}>Solutions</button><button onClick={()=>go("installation")}>Deployment</button><button onClick={()=>go("intelligence")}>Intelligence</button><button onClick={()=>go("company")}>Company</button><MagneticButton className="nav-cta" onClick={()=>setLogin(true)}>Login <Icon name="arrow"/></MagneticButton></nav>
-   <div className="nav-actions"><button className="search-trigger" onClick={()=>setSearch(true)}><Icon name="search"/><span>Search</span><kbd>⌘K</kbd></button><div className="profile-wrap"><button className="profile-trigger" onClick={()=>setProfile(v=>!v)}><span className="avatar">EE</span><Icon name="chevron"/></button>{profile&&<div className="profile-menu"><small>SECURE ACCESS</small><strong>Eagle Eye Network</strong><button onClick={()=>{setProfile(false);setLogin(true)}}><Icon name="lock"/> Sign in to monitoring</button><button onClick={()=>{setProfile(false);go("quote")}}><Icon name="send"/> Request access</button></div>}</div><button className="hamb" onClick={()=>setMenu(v=>!v)}><Icon name="menu"/></button></div>
-  </header>
 
-  <section id="home" className="hero reveal">
-   <video className="hero-video" autoPlay muted playsInline preload="auto" poster={heroPoster} onEnded={e=>e.currentTarget.pause()}><source src={heroVideo} type="video/mp4"/></video>
-   <div className="hero-fallback" style={{backgroundImage:`url(${heroPoster})`}}></div><div className="hero-shade"></div><div className="hero-grid"></div>
-   <div className="hero-content hero-stagger"><h1><span className="shimmer">SEE</span><br/>WHAT<br/><span className="outline">MATTERS.</span></h1><p>Eagle Eye Monitoring provides professional CCTV monitoring, installation and remote surveillance for commercial properties that require dependable visibility and disciplined security operations.</p><div className="hero-buttons"><MagneticButton className="btn-primary" onClick={()=>go("quote")}>Start a security review <Icon name="arrow"/></MagneticButton><MagneticButton className="slide-btn btn-ghost" onClick={()=>go("services")}><span>Explore systems</span><Icon name="arrow"/></MagneticButton></div></div>
-  </section>
+  return <main className="site">
+    <header className="nav">
+      <button className="brand" onClick={()=>go("home")} aria-label="Eagle Eye Monitoring home"><img src={eagleEyeLogo} alt="Eagle Eye Monitoring"/></button>
+      <nav className={menu?"open":""}>
+        <button onClick={()=>go("services")}>Services</button><button onClick={()=>go("industries")}>Industries</button><button onClick={()=>go("about")}>About</button><button onClick={()=>go("contact")}>Contact</button>
+        <Button onClick={()=>go("contact")}>Request a Quote</Button>
+      </nav>
+      <button className="hamb" onClick={()=>setMenu(v=>!v)}>☰</button>
+    </header>
 
-  <section id="company" className="section intro">
-   <div className="section-line"><span>01 / COMPANY</span><span>PROFESSIONAL SECURITY SERVICES</span></div>
-   <div className="intro-grid"><div><div className="micro">BUILT AROUND VISIBILITY</div><h2>Security infrastructure should disappear into the operation — and never disappear from view.</h2></div><div className="intro-copy"><p className="lead">Eagle Eye Monitoring provides professional CCTV monitoring, installation and remote surveillance services for commercial environments.</p><p>We approach each property as a system: understand the site, identify critical visibility points, deploy the right infrastructure and verify that it performs as intended.</p><MagneticButton className="text-link" onClick={()=>go("quote")}>Discuss your property <Icon name="arrow"/></MagneticButton></div></div>
-   <div className="scroll-intro"><div className="scroll-intro-track"><span>MONITOR</span><i>✦</i><span>INSTALL</span><i>✦</i><span>VERIFY</span><i>✦</i><span>PROTECT</span><i>✦</i><span>MONITOR</span><i>✦</i><span>INSTALL</span><i>✦</i><span>VERIFY</span><i>✦</i><span>PROTECT</span></div></div>
-   <div className="metric-row reveal-stagger"><div><strong>24/7</strong><span>MONITORING CAPABILITY</span></div><div><strong>360°</strong><span>PROPERTY VISIBILITY</span></div><div><strong>01</strong><span>COORDINATED DEPLOYMENT</span></div><div><strong>US</strong><span>BUSINESS OPERATIONS</span></div></div>
-  </section>
+    <section id="home" className="hero">
+      <video className="hero-video" autoPlay muted loop playsInline poster={heroPoster}><source src={heroVideo} type="video/mp4"/></video>
+      <img className="hero-fallback" src={heroFallback} alt="Eagle Eye"/>
+      <div className="hero-shade"/>
+      <div className="hero-content">
+        <span className="eyebrow">SECURITY • DIGITAL • TECHNOLOGY</span>
+        <h1>SEE WHAT<br/><em>MATTERS.</em></h1>
+        <p>Eagle Eye Monitoring provides professional security, real estate, digital marketing, content and technology services for modern businesses.</p>
+        <div className="hero-actions"><Button onClick={()=>go("contact")}>Request a Security Review</Button><Button secondary onClick={()=>go("services")}>Explore Our Services</Button></div>
+      </div>
+    </section>
 
-  <section id="services" className="section services reveal"><div className="section-line"><span>02 / SOLUTIONS</span><span>SPOTLIGHT / RING / FLIP</span></div><div className="service-intro"><div><div className="micro">OUR SERVICES</div><h2>Professional coverage.<br/><em>Built around your property.</em></h2></div><p>From security and surveillance to marketing, content and technology, our services support the operational and digital requirements of modern businesses.</p></div>
-   <div className="ring-wrap"><div className="ring-stage" onPointerDown={start} onPointerMove={move} onPointerUp={end} onPointerCancel={end}><div className="ring-glow"></div><div className="ring" style={{transform:`rotateY(${rotation}deg)`}}>{services.map((s,i)=><article className={`ring-card ${i===active?"active":""}`} key={s.title} style={{transform:`rotateY(${i*(360/services.length)}deg) translateZ(330px)`}} onClick={()=>selectService(i)} onDragStart={e=>e.preventDefault()}><div className="ring-card-header"><span>{s.n}</span><Icon name={s.icon}/></div><div><small>{s.tag}</small><h3>{s.title}</h3><p>{s.desc}</p></div><div className="ring-card-footer">VIEW SERVICE <span>↗</span></div></article>)}</div></div><div className="ring-meta"><span>DRAG TO ROTATE</span><b>{services[active].n} / 07</b><span>DRAG TO EXPLORE SERVICES</span></div></div>
-   <div className="spotlight-grid reveal-stagger">{services.map((s,i)=><article className={`spotlight ${i===active?"spotlight-active":""}`} key={s.title} onClick={()=>setActive(i)}><div className="spotlight-image"><img src={s.image} alt=""/><span>{s.n}</span></div><div className="spotlight-copy"><small>{s.tag}</small><h3>{s.title}</h3><p>{s.desc}</p><button className="slide-btn"><span>View capability</span><Icon name="arrow"/></button></div></article>)}</div>
-  </section>
+    <section id="about" className="intro section">
+      <div><span className="eyebrow">WHO WE ARE</span><h2>A multi-domain business built around <em>visibility, capability and service.</em></h2></div>
+      <div><p>Eagle Eye Monitoring brings together security operations, property promotion, digital marketing, content services and IT & technology support.</p><p>Our approach is practical: understand the requirement, build the right solution and deliver dependable support.</p><Button secondary onClick={()=>go("contact")}>Talk to Our Team</Button></div>
+    </section>
 
-  <section id="installation" className="section deployment reveal"><div className="section-line"><span>03 / DEPLOYMENT</span><span>ASSESSMENT → INSTALLATION → VERIFICATION</span></div><div className="deploy-head"><div><div className="micro">CCTV INSTALLATION</div><h2>Designed for the site.<br/><em>Installed for reliability.</em></h2></div><p>We assess the property, identify critical coverage areas, select appropriate equipment and complete installation and system verification before handover.</p></div><div className="process-grid reveal-stagger">{process.map(([n,t,d])=><article key={n}><span>{n}</span><div className="process-icon"><i></i></div><h3>{t}</h3><p>{d}</p></article>)}</div><div className="visual-split"><div className="visual-large"><img src={installImage} alt="Technician installing a commercial security camera"/><div className="visual-overlay"><span>DEPLOYMENT / 01</span><strong>INSTALL<br/>WITH INTENT.</strong></div><div className="corner-data">CAMERA ARRAY / A<br/>COVERAGE / 96%<br/>STATUS / NOMINAL</div></div><div className="visual-small"><img src={buildingImage} alt="Commercial security camera system"/><div className="visual-overlay"><span>SYSTEM / 02</span><strong>SEE<br/>EVERY ANGLE.</strong></div></div></div></section>
+    <section id="services" className="section services">
+      <div className="section-head"><div><span className="eyebrow">OUR SERVICES</span><h2>Multiple domains.<br/><em>One trusted partner.</em></h2></div><p>Explore the services Eagle Eye Monitoring provides across security, property, digital, content and technology.</p></div>
+      <div className="service-grid">{services.map((s,i)=>{
+        const flipped=flippedServices.includes(i)
+        const toggle=()=>setFlippedServices(current=>current.includes(i)?current.filter(x=>x!==i):[...current,i])
+        const keyToggle=(e:KeyboardEvent<HTMLElement>)=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}}
+        return <article className={`service-card ${flipped?"is-flipped":""}`} key={s.title} tabIndex={0} aria-pressed={flipped} onClick={toggle} onKeyDown={keyToggle}>
+          <div className="service-flip-inner">
+            <div className="service-face service-front">
+              <div className="service-image"><img src={s.image} alt=""/></div>
+              <div className="service-front-copy"><span>{s.tag}</span><h3>{s.title}</h3><div className="flip-hint"><span>Hover or tap to explore</span><Arrow/></div></div>
+            </div>
+            <div className="service-face service-back">
+              <span className="eyebrow">{s.tag}</span><h3>{s.title}</h3><p>{s.text}</p>
+              <div className="back-actions"><button className="flip-back" type="button" onClick={e=>{e.stopPropagation();toggle()}}>Back</button><Button onClick={()=>go("contact")}>Request a Quote</Button></div>
+            </div>
+          </div>
+        </article>
+      })}</div>
+    </section>
 
-  <section id="intelligence" className="section intelligence reveal"><div className="section-line"><span>04 / REMOTE MONITORING</span><span>CONTINUOUS VISIBILITY</span></div><div className="intel-grid"><div className="monitor-card"><div className="monitor-top"><span>PROPERTY / SURVEILLANCE</span><span>● LIVE FEED</span></div><div className="monitor-image"><img src={monitoringRoom} alt="Security monitoring environment"/><div className="scan-line"></div><div className="crosshair"></div><span className="cam-label a">CAM 01 / ENTRY</span><span className="cam-label b">CAM 04 / AISLE</span><span className="cam-label c">CAM 07 / SERVICE</span></div><div className="monitor-bottom"><span>REMOTE ACCESS / AUTHORIZED USERS</span><span>SECURE / ACTIVE</span></div></div><div className="intel-copy"><div className="micro">REMOTE VIDEO SURVEILLANCE</div><h2>Maintain visibility.<br/><em>Wherever your business operates.</em></h2><p>Authorized personnel can access surveillance information remotely, helping property and operations teams maintain awareness beyond the physical site.</p><div className="signal"><span>MONITORING STATUS</span><div><i style={{width:"100%"}}></i></div><b>ACTIVE</b></div></div></div></section>
+    <section id="industries" className="section industries"><div className="section-head"><div><span className="eyebrow">INDUSTRIES</span><h2>Services designed for<br/><em>real business environments.</em></h2></div><p>From retail and commercial properties to growing digital businesses, our capabilities can be combined around the requirement.</p></div><div className="industry-grid">{industries.map((x,i)=><div className="industry" key={x}><span>0{i+1}</span><h3>{x}</h3><p>Professional support aligned with operational and business requirements.</p></div>)}</div></section>
 
-  <section className="section owners reveal"><div className="section-line"><span>05 / FOR PROPERTY LEADERS</span><span>SECURITY / OPERATIONS / OVERSIGHT</span></div><div className="owners-head"><div><div className="micro">FOR PROPERTY & OPERATIONS LEADERS</div><h2>Security that supports<br/><em>better decisions.</em></h2></div><div className="carousel-controls"><button onClick={()=>setOwner((owner+owners.length-1)%owners.length)}>←</button><span>{String(owner+1).padStart(2,"0")} / {String(owners.length).padStart(2,"0")}</span><button onClick={()=>setOwner((owner+1)%owners.length)}>→</button></div></div><div className="owner-carousel reveal-stagger">{owners.map((o,i)=><article className={`owner-card ${i===owner?"owner-active":""}`} key={o.role} onClick={()=>setFlipped(flipped===i?null:i)}><div className={`owner-inner ${flipped===i?"flipped":""}`}><div className="owner-face owner-front"><img src={o.image} alt=""/><div className="owner-shade"></div><div className="owner-role">{o.role}</div><div className="owner-title">{o.title}</div><div className="owner-hint">CLICK TO EXPLORE ↻</div></div><div className="owner-face owner-back"><span>{o.metric}</span><h3>{o.title}</h3><p>{o.text}</p><button className="slide-btn"><span>Request a security review</span><Icon name="arrow"/></button></div></div></article>)}</div></section>
+    <section className="section process"><span className="eyebrow">HOW WE WORK</span><h2>Understand. Build. <em>Deliver.</em></h2><div className="process-grid">{[["01","Understand","Review the business requirement and operating environment."],["02","Plan","Select the right service mix and practical approach."],["03","Deliver","Execute the work with attention to quality and consistency."],["04","Support","Stay available for follow-up requirements and ongoing support."]].map(x=><article key={x[0]}><span>{x[0]}</span><h3>{x[1]}</h3><p>{x[2]}</p></article>)}</div></section>
 
-  <section id="quote" className="quote-section reveal"><div className="quote-glow"></div><div className="section-line"><span>06 / CONTACT</span><span>REQUEST A SECURITY REVIEW</span></div><div className="quote-grid"><div><div className="micro">REQUEST A SECURITY REVIEW</div><h2>Tell us what you need to protect.</h2><p>Share your property type, current CCTV environment or planned installation. Our team will review the requirement and recommend an appropriate next step.</p><div className="contact-line"><span>FOCUS</span><strong>COMMERCIAL CCTV & SURVEILLANCE</strong><span>ENQUIRY</span><strong>PROPERTY REVIEW / INSTALLATION / MONITORING</strong></div></div><form onSubmit={submit}>{sent&&<div className="success full">REQUEST RECEIVED / OUR TEAM WILL REVIEW THE DETAILS.</div>}<label>NAME<input required name="name" placeholder="Your name"/></label><label>BUSINESS<input required name="business" placeholder="Company / property"/></label><label>EMAIL<input required type="email" name="email" placeholder="name@company.com"/></label><label>PHONE<input name="phone" placeholder="+1 (___) ___-____"/></label><label className="full">REQUIREMENT<textarea required name="message" rows={4} placeholder="Tell us about the property, CCTV system or monitoring requirement."/></label><div className="full"><MagneticButton className="btn-primary" >Submit security enquiry <Icon name="send"/></MagneticButton></div></form></div></section>
+    <section id="contact" className="contact section"><div className="contact-copy"><span className="eyebrow">CONTACT EAGLE EYE</span><h2>Tell us what your business <em>needs.</em></h2><p>Send an enquiry and your email application will open with the details prepared for our team.</p><div className="address"><strong>Business Address</strong><span>{ADDRESS}</span></div><div className="address"><strong>Enquiry Email</strong><span>{ENQUIRY_EMAIL}</span></div></div><form onSubmit={submit}><label>NAME<input name="name" required placeholder="Your name"/></label><label>COMPANY / PROPERTY<input name="company" required placeholder="Company or property name"/></label><label>EMAIL<input name="email" required type="email" placeholder="you@example.com"/></label><label>PHONE<input name="phone" placeholder="Phone number"/></label><label>SERVICE<select name="service"><option>CCTV Monitoring</option><option>CCTV Installation</option><option>Real Estate Promotions</option><option>Digital Marketing</option><option>Content Creation</option><option>Content Moderation</option><option>IT & Technology</option><option>General Enquiry</option></select></label><label>MESSAGE<textarea name="message" required rows={5} placeholder="Tell us what you need..."/></label><Button>Send Enquiry</Button>{sent&&<div className="sent">Your email application has been prepared. Complete the send action in your email app.</div>}<small className="form-note">By submitting, you agree that Eagle Eye Monitoring may use the information provided to respond to your enquiry. See our Privacy Policy.</small></form></section>
 
-  <footer><div className="footer-brand"><img className="footer-logo" src={eagleLogo} alt="Eagle Eye Monitoring" /><div><b className="shimmer">EAGLE EYE MONITORING</b><small>SEE • TRACK • MANAGE</small></div></div><p>Professional video security infrastructure for commercial environments that require dependable visibility.</p><div className="footer-links"><button onClick={()=>go("services")}>Solutions</button><button onClick={()=>go("installation")}>Deployment</button><button onClick={()=>setLogin(true)}>Secure Login</button></div><div className="footer-bottom"><span>© 2026 EAGLE EYE MONITORING</span><span>SECURITY / VISIBILITY / CONTROL</span></div></footer>
+    <footer><div className="footer-main"><div className="footer-brand"><img src={eagleEyeLogo} alt="Eagle Eye Monitoring"/><h3>EAGLE EYE MONITORING</h3><p>Security, digital, property, content and technology services for modern businesses.</p></div><div><strong>Explore</strong><button onClick={()=>go("services")}>Services</button><button onClick={()=>go("industries")}>Industries</button><button onClick={()=>go("about")}>About</button></div><div><strong>Legal</strong><button onClick={()=>setPolicy("privacy")}>Privacy Policy</button><button onClick={()=>setPolicy("terms")}>Terms of Use</button></div><div><strong>Location</strong><p>{ADDRESS}</p></div></div><div className="footer-bottom"><span>© 2026 Eagle Eye Monitoring</span><span>SEE • TRACK • MANAGE</span></div></footer>
 
-  {search&&<div className="overlay" onMouseDown={()=>setSearch(false)}><div className="search-panel" onMouseDown={e=>e.stopPropagation()}><div className="search-head"><Icon name="search"/><input autoFocus value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search solutions, deployment, intelligence..."/><button onClick={()=>setSearch(false)}><Icon name="close"/></button></div><div className="search-results">{results.length?results.map((r,i)=><button key={r.label} onClick={()=>{setSearch(false);setQuery("");go(r.id)}}><span>{String(i+1).padStart(2,"0")}</span>{r.label}<Icon name="arrow"/></button>):<p>NO MATCHES / TRY "CCTV" OR "MONITORING"</p>}</div><div className="search-foot">ACTION SEARCH <kbd>ESC</kbd></div></div></div>}
-  <aside className={`login-drawer ${login?"open":""}`}><div className="drawer-top"><span>SECURE ACCESS / 09</span><button onClick={()=>setLogin(false)}><Icon name="close"/></button></div><div className="drawer-body"><div className="micro">EAGLE EYE NETWORK</div><h2>Monitoring<br/><em>access.</em></h2><p>Secure access is reserved for authorized monitoring and operations personnel.</p><label>EMAIL<input type="email" placeholder="name@company.com"/></label><label>PASSWORD<input type="password" placeholder="••••••••••"/></label><MagneticButton className="btn-primary">Continue <Icon name="arrow"/></MagneticButton><small className="drawer-note"><Icon name="lock"/> Protected access / authorized users only</small></div></aside>
-  {login&&<div className="drawer-backdrop" onClick={()=>setLogin(false)}></div>}
- </main>
+    {policy&&<div className="modal-backdrop" onClick={()=>setPolicy(null)}><div className="policy-modal" onClick={e=>e.stopPropagation()}><button className="close" onClick={()=>setPolicy(null)}>×</button><span className="eyebrow">LEGAL</span><h2>{policy==="privacy"?"Privacy Policy":"Terms of Use"}</h2>{policy==="privacy"?<><p><strong>Effective date: October 2026</strong></p><p>Eagle Eye Monitoring respects your privacy. When you submit an enquiry, we may collect information such as your name, company or property name, email address, phone number and message.</p><p>We use this information to review and respond to your enquiry, communicate about requested services and maintain appropriate business records.</p><p>We do not ask visitors to create a public account to use this website. Information submitted through the enquiry form is intended for business communication and should not include passwords, financial credentials or other sensitive information.</p><p>We may use essential website technologies and third-party services needed to operate the site. If analytics, advertising or additional tracking is introduced, this policy should be updated accordingly.</p><p>You may contact us to ask about the personal information you have submitted or to request correction of inaccurate information.</p><p>Privacy questions can be directed to <strong>{ENQUIRY_EMAIL}</strong>.</p></>:<><p>By using this website, you agree to use it lawfully and respectfully.</p><p>Website content is provided for general business information. Service descriptions and availability may change without notice.</p><p>Information submitted through the enquiry form should be accurate and should not contain unlawful, abusive or confidential third-party material.</p><p>Nothing on this website creates a contractual commitment unless separately agreed in writing by Eagle Eye Monitoring.</p><p>Questions about these terms can be directed to <strong>{ENQUIRY_EMAIL}</strong>.</p></>}</div></div>}
+  </main>
 }

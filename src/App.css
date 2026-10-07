@@ -182,3 +182,18 @@
     border-right-color: var(--border);
   }
 }
+
+/* Interactive detail cards and service dialog */
+.spotlight[role="button"], .ring-card[role="button"], .owner-card[role="button"] { cursor: pointer; }
+.spotlight[role="button"]:focus-visible, .ring-card[role="button"]:focus-visible, .owner-card[role="button"]:focus-visible { outline: 2px solid #d8b45c; outline-offset: 4px; }
+.service-modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px; background: rgba(0,0,0,.82); backdrop-filter: blur(12px); }
+.service-modal { position: relative; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); width: min(900px,100%); max-height: min(80vh,720px); overflow: auto; border: 1px solid rgba(216,180,92,.38); background: #0c0c0b; box-shadow: 0 30px 100px rgba(0,0,0,.55); }
+.service-modal-image { min-height: 320px; background: #151513; }
+.service-modal-image img { width: 100%; height: 100%; min-height: 320px; object-fit: cover; }
+.service-modal-copy { align-self: center; padding: clamp(28px,5vw,56px); }
+.service-modal-copy h2 { margin: 16px 0; font-size: clamp(30px,4vw,48px); line-height: 1.05; }
+.service-modal-copy p { color: #c3c0b8; line-height: 1.8; }
+.service-modal-copy .service-modal-note { margin: 20px 0 28px; font-size: 13px; }
+.service-modal-close { position: absolute; z-index: 1; top: 12px; right: 12px; display: grid; place-items: center; width: 42px; height: 42px; color: #fff; border: 1px solid rgba(255,255,255,.25); background: rgba(0,0,0,.7); cursor: pointer; }
+.login-notice { margin-top: 16px; color: #d8b45c; font-size: 12px; line-height: 1.7; }
+@media (max-width: 640px) { .service-modal { grid-template-columns: 1fr; max-height: 86vh; } .service-modal-image, .service-modal-image img { min-height: 190px; max-height: 240px; } .service-modal-copy { padding: 26px; } }
